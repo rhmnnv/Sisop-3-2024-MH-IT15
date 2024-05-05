@@ -12,9 +12,10 @@
 #include "actions.c"
 
 #define PORT 8080
+#define LOG_FILE "/soal_3/race.log"
 
 void penulis(const char *orang, const char *jenis, const char *jumlah) {
-    #define LOG_FILE "/soal_3/race.log"
+
     FILE* file_ptr = fopen(LOG_FILE, "a");
     if (file_ptr == NULL) {
         perror("Failed to open log file");
