@@ -22,12 +22,15 @@ int main(int argc, char *argv[]) {
     inet_pton(AF_INET, IP, &serv_addr.sin_addr);
     connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 
-    printf("Koneksi Berhasil\n");
-
-
     bzero(buffer, 1024);
     strcpy(buffer, jenis);
     send(sock, buffer, strlen(buffer), 0);
+
+    FILE* file_ptr = fopen("race.log", "r");
+    if (file_ptr == NULL) {
+        file_ptr = fopen("race.log", "w");
+    }
+    fclose(file_ptr);
 
     if (strcmp("Gap", jenis)== 0)
     {
@@ -39,12 +42,12 @@ int main(int argc, char *argv[]) {
         int angka = atoi(jumlah);
         send(sock, &angka, sizeof(angka), 0);
     }
-    else if (strcmp("Sisa", jenis)== 0)
+    else if (strcmp("Tire", jenis)== 0)
     {
         int angka = atoi(jumlah);
         send(sock, &angka, sizeof(angka), 0);
     }
-    else if (strcmp("Tire", jenis)== 0)
+    else if (strcmp("Type", jenis)== 0)
     {
         if(strcmp("Medium", jumlah)== 0){
             bzero(buffer, 1024);
@@ -58,4 +61,8 @@ int main(int argc, char *argv[]) {
         }
     }
     
+    printf("[Driver]: [%s][%s]\n", jenis, jumlah);
+    bzero(buffer, 1024);
+    recv(sock, buffer, sizeof(buffer), 0);
+    printf("[Paddock]: [%s]\n", buffer);
 }
