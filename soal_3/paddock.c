@@ -12,10 +12,10 @@
 #include "actions.c"
 
 #define PORT 8080
-#define LOG_FILE "/soal_3/race.log"
+#define LOG_FILE "/home/mken/SISOPraktikum/SISOP3/soal_3/race.log"
 
 void penulis(const char *orang, const char *jenis, const char *jumlah) {
-
+    
     FILE* file_ptr = fopen(LOG_FILE, "a");
     if (file_ptr == NULL) {
         perror("Failed to open log file");
@@ -25,7 +25,7 @@ void penulis(const char *orang, const char *jenis, const char *jumlah) {
     time_t current_time = time(NULL);
     struct tm *local_time = localtime(&current_time);
 
-    fprintf(file_ptr, "[%s] [%02d/%02d/%04d %02d:%02d:%02d]: [%s] [%s]\n",
+    fprintf(file_ptr, "%s [%02d/%02d/%04d %02d:%02d:%02d]: [%s] [%s]\n",
             orang,
             local_time->tm_mday, 
             local_time->tm_mon + 1, 
@@ -71,7 +71,6 @@ int main() {
     int addrlen = sizeof(address);
     char buffer[1024];
 
-    // Create socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         perror("Socket creation failed");
         exit(EXIT_FAILURE);
@@ -90,6 +89,8 @@ int main() {
         perror("Listen failed");
         exit(EXIT_FAILURE);
     }
+
+
     daemonize();
     while (1) {
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
@@ -97,10 +98,8 @@ int main() {
             continue;
         }
 
-        // Clear buffer
         bzero(buffer, sizeof(buffer));
 
-        // Receive data from client
         if (recv(new_socket, buffer, sizeof(buffer), 0) < 0) {
             perror("Receive failed");
             close(new_socket);
@@ -121,7 +120,9 @@ int main() {
             result = gap(distance);
             penulis("[Driver]", buffer, str_distance);
 
-        } else if (strcmp("Fuel", buffer) == 0) {
+        } 
+        
+        else if (strcmp("Fuel", buffer) == 0) {
             int bensin;
             if (recv(new_socket, &bensin, sizeof(bensin), 0) < 0) {
                 perror("Receive failed");
@@ -133,7 +134,9 @@ int main() {
             result = fuel(bensin);
             penulis("[Driver]", buffer, str_fuel);
 
-        } else if (strcmp("Sisa", buffer) == 0) {
+        } 
+        
+        else if (strcmp("Tire", buffer) == 0) {
             int sisa;
             if (recv(new_socket, &sisa, sizeof(sisa), 0) < 0) {
                 perror("Receive failed");
@@ -145,7 +148,9 @@ int main() {
             result = ban(sisa);
             penulis("[Driver]", buffer, str_sisa);
 
-        } else if (strcmp("Tire", buffer) == 0) {
+        } 
+        
+        else if (strcmp("Type", buffer) == 0) {
             char tire_type[256];
             if (recv(new_socket, tire_type, sizeof(tire_type) - 1, 0) < 0) {
                 perror("Receive failed");
@@ -161,7 +166,9 @@ int main() {
             result = tire(jenis_ban);
             penulis("[Driver]", buffer, jenis_ban);
 
-        } else {
+        } 
+        
+        else {
             result = "Wrongggg Command";
             penulis("[Driver]", buffer, "ERROR");
             
@@ -169,12 +176,10 @@ int main() {
 
         penulis("[Paddock]", buffer, result);
 
-        // Send response to client
         if (send(new_socket, result, strlen(result), 0) < 0) {
             perror("Send failed");
         }
 
-        // Close socket
         close(new_socket);
     }
 
