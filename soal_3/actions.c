@@ -48,6 +48,7 @@ const char *tire(char *tipe) {
     else if(strcmp("Medium", tipe) == 0){
         return "Box for Softs";
     }
-    
+    else {
+        return "Invalid tire type";
+    }
 }
-
